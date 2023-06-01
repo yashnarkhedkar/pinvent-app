@@ -56,6 +56,24 @@ const ProductForm = ({
             onChange={handleInputChange}
           />
 
+          <label>Product Weight:</label>
+          <input
+            type="text"
+            placeholder="Product Weight (grams)"
+            name="weight"
+            value={product?.weight}
+            onChange={handleInputChange}
+          />
+
+          <label>RFID Card Number:</label>
+          <input
+            type="text"
+            placeholder="Card Number"
+            name="cardNumber"
+            value={product?.cardNumber}
+            onChange={handleInputChange}
+          />
+
           <label>Product Price:</label>
           <input
             type="text"

@@ -281,6 +281,40 @@ const forgotPassword = asyncHandler(async (req, res) => {
   }
 });
 
+const sendWelcomeEmail = async (req, res) => {
+  const { name, email } = req.body;
+
+  const imageUrl = process.env.WELCOME_IMAGE;
+  const websiteUrl = process.env.FRONTEND_URL;
+  
+  const message = `
+    <div style="text-align: center;">
+      <h1 style="font-size: 34px;">Welcome to Inventron, ${name}!</h1>
+      <p style="font-size: 22px;">Thank you for joining our community.</p>
+      <p style="font-size: 22px;">We hope you have a great experience using our services.</p>
+      
+      <img src="${imageUrl}" alt="Welcome Image" style="max-width: 100%;">
+
+      <p style="font-size: 24px;font-weight: 600;">Our website is all about managing smart inventory using IOT.</p>
+
+      <a href="${websiteUrl}" style="display: inline-block; background-color: #007bff; color: #fff; padding: 10px 20px; text-decoration: none; margin-top: 20px; font-size: 16px;">Get Started</a>
+
+      <p style="font-size: 16px;">Regards...</p>
+    </div>
+  `;
+
+  const subject = "Welcome to Inventron";
+  const send_to = email;
+  const sent_from = process.env.EMAIL_USER;
+
+  try {
+    await sendEmail(subject, message, send_to, sent_from);
+    console.log("Welcome email sent");
+  } catch (error) {
+    throw new Error("Failed to send welcome email");
+  }
+};
+
 // Reset Password
 const resetPassword = asyncHandler(async (req, res) => {
   const { password } = req.body;
@@ -322,4 +356,5 @@ module.exports = {
   changePassword,
   forgotPassword,
   resetPassword,
+  sendWelcomeEmail
 };

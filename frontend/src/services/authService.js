@@ -80,6 +80,23 @@ export const forgotPassword = async (userData) => {
   }
 };
 
+// Send Welcome Email
+export const sendWelcomeEmail = async (userData) => {
+  console.log("Client Welcome Function called");
+  try {
+    await axios.post(
+      `${BACKEND_URL}/api/users/sendwelcomeemail`,
+      userData
+    );
+  } catch (error) {
+    const message =
+      (error.response && error.response.data && error.response.data.message) ||
+      error.message ||
+      error.toString();
+    toast.error(message);
+  }
+};
+
 // Reset Password
 export const resetPassword = async (userData, resetToken) => {
   try {

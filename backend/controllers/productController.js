@@ -5,22 +5,29 @@ const cloudinary = require("cloudinary").v2;
 
 // Create Prouct
 const createProduct = asyncHandler(async (req, res) => {
-  const { name, sku, category, quantity, price, description } = req.body;
+  const { name, sku, category, cardNumber, weight, quantity, price, description } = req.body;
 
   //   Validation
-  if (!name || !category || !quantity || !price || !description) {
+  if (!name || !category || !cardNumber || !weight || !quantity || !price || !description) {
     res.status(400);
     throw new Error("Please fill in all fields");
   }
 
   // Handle Image upload
   let fileData = {};
+  // Set your Cloudinary credentials (key and secret)
+  cloudinary.config({
+    cloud_name: 'dhfswf7lz',
+    api_key: '382291649831429',
+    api_secret: 'qvAiNli23-jGdtr4l6ZPQPt-rdw'
+  });
+
   if (req.file) {
     // Save image to cloudinary
     let uploadedFile;
     try {
       uploadedFile = await cloudinary.uploader.upload(req.file.path, {
-        folder: "Pinvent App",
+        folder: "Inventron",
         resource_type: "image",
       });
     } catch (error) {
@@ -42,7 +49,10 @@ const createProduct = asyncHandler(async (req, res) => {
     name,
     sku,
     category,
+    cardNumber,
+    weight,
     quantity,
+    available : quantity,
     price,
     description,
     image: fileData,
@@ -92,7 +102,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
 
 // Update Product
 const updateProduct = asyncHandler(async (req, res) => {
-  const { name, category, quantity, price, description } = req.body;
+  const { name, category, quantity, weight, cardNumber, price, description } = req.body;
   const { id } = req.params;
 
   const product = await Product.findById(id);
@@ -138,6 +148,9 @@ const updateProduct = asyncHandler(async (req, res) => {
       name,
       category,
       quantity,
+      available : quantity,
+      cardNumber,
+      weight,
       price,
       description,
       image: Object.keys(fileData).length === 0 ? product?.image : fileData,
@@ -151,10 +164,44 @@ const updateProduct = asyncHandler(async (req, res) => {
   res.status(200).json(updatedProduct);
 });
 
+const updateQuantity = asyncHandler(async (req, res) => {
+  const cards = {
+    "17003E845DF0" : "0004097117",
+    "17003E35415D" : "0004076865",
+    "18002B5F1D71" : "0002842397",
+  }
+  let { cardNumber, weight } = req.body;
+  console.log(parseInt(weight));
+  const filteredCardNumber = cards[cardNumber];
+
+  const product = await Product.findOne({ cardNumber: filteredCardNumber });
+  
+  if (product) {
+    const recordWeight = parseInt(product.weight);
+    const receivedWeight = parseInt(weight);
+
+    // Perform the desired action, such as updating quantity
+    const updatedQuantity = receivedWeight / recordWeight;
+    if(product.available === "0"){
+      res.status(200).send("Product Quantity becomes zero!!");
+      return ;
+    }
+    product.available -= updatedQuantity;
+
+    await product.save();
+    console.log(`Record found. Updated quantity: ${product.available}`);
+  } else {
+    console.log('Card number not found in the database');
+  }
+  res.sendStatus(200);
+});
+
+
 module.exports = {
   createProduct,
   getProducts,
   getProduct,
   deleteProduct,
   updateProduct,
+  updateQuantity
 };

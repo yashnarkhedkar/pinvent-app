@@ -11,6 +11,8 @@ import {
 const initialState = {
   name: "",
   category: "",
+  cardNumber:"",
+  weight : "",
   quantity: "",
   price: "",
 };
@@ -25,7 +27,7 @@ const AddProduct = () => {
 
   const isLoading = useSelector(selectIsLoading);
 
-  const { name, category, price, quantity } = product;
+  const { name, category, cardNumber, weight, price, quantity } = product;
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -50,6 +52,9 @@ const AddProduct = () => {
     formData.append("name", name);
     formData.append("sku", generateKSKU(category));
     formData.append("category", category);
+    formData.append("cardNumber", cardNumber);
+    formData.append("weight", weight);
+    formData.append("available", Number(quantity));
     formData.append("quantity", Number(quantity));
     formData.append("price", price);
     formData.append("description", description);
@@ -60,7 +65,7 @@ const AddProduct = () => {
     await dispatch(createProduct(formData));
 
     navigate("/dashboard");
-  };
+  };  
 
   return (
     <div>

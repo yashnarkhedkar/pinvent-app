@@ -54,9 +54,12 @@ const EditProduct = () => {
     e.preventDefault();
     const formData = new FormData();
     formData.append("name", product?.name);
-
+ 
     formData.append("category", product?.category);
+    formData.append("cardNumber", product?.cardNumber);
+    formData.append("weight", product?.weight);
     formData.append("quantity", product?.quantity);
+    formData.append("available", product?.quantity);
     formData.append("price", product?.price);
     formData.append("description", description);
     if (productImage) {

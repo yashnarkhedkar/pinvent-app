@@ -23,6 +23,19 @@ const productSchema = mongoose.Schema(
       required: [true, "Please add a category"],
       trim: true,
     },
+    cardNumber: {
+      type: String,
+      required: [true, "Please add a RFID cardNumber"],
+      trim: true,
+    },
+    weight: {
+      type: String,
+      required: [true, "Please add a Weight"],
+      trim: true,
+    },
+    available : {
+      type : String,
+    },
     quantity: {
       type: String,
       required: [true, "Please add a quantity"],

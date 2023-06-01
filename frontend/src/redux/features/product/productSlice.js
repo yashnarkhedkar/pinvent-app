@@ -116,8 +116,8 @@ const productSlice = createSlice({
       const products = action.payload;
       const array = [];
       products.map((item) => {
-        const { price, quantity } = item;
-        const productValue = price * quantity;
+        const { price, available } = item;
+        const productValue = price * available;
         return array.push(productValue);
       });
       const totalValue = array.reduce((a, b) => {
@@ -129,9 +129,9 @@ const productSlice = createSlice({
       const products = action.payload;
       const array = [];
       products.map((item) => {
-        const { quantity } = item;
+        const { available } = item;
 
-        return array.push(quantity);
+        return array.push(available);
       });
       let count = 0;
       array.forEach((number) => {

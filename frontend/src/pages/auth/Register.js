@@ -8,12 +8,22 @@ import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { SET_LOGIN, SET_NAME } from "../../redux/features/auth/authSlice";
 import Loader from "../../components/loader/Loader";
+import { sendWelcomeEmail } from "../../services/authService";
 
 const initialState = {
   name: "",
   email: "",
   password: "",
   password2: "",
+};
+
+const sendEmail = async (userData) => {
+  try {
+    const response = await sendWelcomeEmail(userData);
+    toast.success(response.data.message);
+  } catch (error) {
+    toast.error(error.message);
+  }
 };
 
 const Register = () => {
@@ -56,6 +66,7 @@ const Register = () => {
       await dispatch(SET_LOGIN(true));
       await dispatch(SET_NAME(data.name));
       navigate("/dashboard");
+      sendEmail(userData);
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);

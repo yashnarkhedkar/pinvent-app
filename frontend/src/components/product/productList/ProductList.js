@@ -17,6 +17,7 @@ import {
   getProducts,
 } from "../../../redux/features/product/productSlice";
 import { Link } from "react-router-dom";
+import io from 'socket.io-client';
 
 const ProductList = ({ products, isLoading }) => {
   const [search, setSearch] = useState("");
@@ -78,6 +79,18 @@ const ProductList = ({ products, isLoading }) => {
     dispatch(FILTER_PRODUCTS({ products, search }));
   }, [products, search, dispatch]);
 
+  useEffect(() => {
+    const socket = io('http://localhost:8080');
+
+    socket.on('message', message => {
+      console.log(message);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
   return (
     <div className="product-list">
       <hr />
@@ -107,6 +120,7 @@ const ProductList = ({ products, isLoading }) => {
                   <th>Name</th>
                   <th>Category</th>
                   <th>Price</th>
+                  <th>Available</th>
                   <th>Quantity</th>
                   <th>Value</th>
                   <th>Action</th>
@@ -115,20 +129,21 @@ const ProductList = ({ products, isLoading }) => {
 
               <tbody>
                 {currentItems.map((product, index) => {
-                  const { _id, name, category, price, quantity } = product;
+                  const { _id, name, category, available, price, quantity } = product;
                   return (
                     <tr key={_id}>
                       <td>{index + 1}</td>
                       <td>{shortenText(name, 16)}</td>
                       <td>{category}</td>
                       <td>
-                        {"$"}
+                        {"₹"}
                         {price}
                       </td>
+                      <td>{available}</td>
                       <td>{quantity}</td>
                       <td>
-                        {"$"}
-                        {price * quantity}
+                        {"₹"}
+                        {price * available}
                       </td>
                       <td className="icons">
                         <span>
