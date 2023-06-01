@@ -97,7 +97,7 @@ const EditProfile = () => {
         <form className="--form-control --m" onSubmit={saveProfile}>
           <span className="profile-data">
             <p>
-              <label>Name:</label>
+              <label>Business Name:</label>
               <input
                 type="text"
                 name="name"
@@ -106,7 +106,7 @@ const EditProfile = () => {
               />
             </p>
             <p>
-              <label>Email:</label>
+              <label>Business Email:</label>
               <input type="text" name="email" value={profile?.email} disabled />
               <br />
               <code>Email cannot be changed.</code>

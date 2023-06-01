@@ -43,10 +43,10 @@ const Profile = () => {
             </span>
             <span className="profile-data">
               <p>
-                <b>Name : </b> {profile?.name}
+                <b>Business Name : </b> {profile?.name}
               </p>
               <p>
-                <b>Email : </b> {profile?.email}
+                <b>Business Email : </b> {profile?.email}
               </p>
               <p>
                 <b>Phone : </b> {profile?.phone}

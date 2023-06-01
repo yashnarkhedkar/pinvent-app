@@ -86,7 +86,7 @@ const Register = () => {
           <form onSubmit={register}>
             <input
               type="text"
-              placeholder="Name"
+              placeholder="Business Name"
               required
               name="name"
               value={name}
@@ -94,7 +94,7 @@ const Register = () => {
             />
             <input
               type="email"
-              placeholder="Email"
+              placeholder="Business Email"
               required
               name="email"
               value={email}
