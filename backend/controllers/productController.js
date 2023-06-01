@@ -171,17 +171,22 @@ const updateQuantity = asyncHandler(async (req, res) => {
     "18002B5F1D71" : "0002842397",
   }
   let { cardNumber, weight } = req.body;
-  console.log(parseInt(weight));
+  console.log("Weight ", weight);
   const filteredCardNumber = cards[cardNumber];
 
   const product = await Product.findOne({ cardNumber: filteredCardNumber });
   
   if (product) {
+    let receivedWeight = parseFloat(weight).toFixed(2);
     const recordWeight = parseInt(product.weight);
-    const receivedWeight = parseInt(weight);
+    receivedWeight = Math.floor(receivedWeight / recordWeight) * recordWeight;
 
-    // Perform the desired action, such as updating quantity
+    console.log("Corrected weight ", receivedWeight);
+
     const updatedQuantity = receivedWeight / recordWeight;
+
+    console.log("quantity", product.available, " ", updatedQuantity);
+    
     if(product.available === "0"){
       res.status(200).send("Product Quantity becomes zero!!");
       return ;
