@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://inventeron.netlify.app", "http://localhost:8080"],
+    origin: ["http://localhost:3000", "https://inventeron.netlify.app", "http://192.168.210.91"],
     credentials: true,
   })
 );
