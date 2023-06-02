@@ -172,6 +172,10 @@ const updateQuantity = asyncHandler(async (req, res) => {
   }
   let { cardNumber, weight } = req.body;
   console.log("Weight ", weight);
+  if(weight < 0){
+    res.status(200).send("Weight cannot be negative!!");
+    return ;
+  }
   const filteredCardNumber = cards[cardNumber];
 
   const product = await Product.findOne({ cardNumber: filteredCardNumber });
