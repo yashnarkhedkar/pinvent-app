@@ -248,6 +248,7 @@ async function sendEmailsToUsers(users) {
                           <thead>
                             <tr>
                               <th style="border: 1px solid black; padding: 10px;">Product</th>
+                              <th style="border: 1px solid black; padding: 10px;">Name</th>
                               <th style="border: 1px solid black; padding: 10px;">Price</th>
                             </tr>
                           </thead>
@@ -258,8 +259,8 @@ async function sendEmailsToUsers(users) {
       emailContent += `<tr>
                         <td style="border: 1px solid black; padding: 10px;">
                           <img src="${imageFilePath}" alt="${name}" style="display: block; max-width: 50px; height: auto;">
-                          <p style="margin: 0;">${name}</p>
                         </td>
+                        <td style="border: 1px solid black; padding: 10px;">${name}</td>
                         <td style="border: 1px solid black; padding: 10px;">${price}</td>
                       </tr>`;
     }
@@ -279,7 +280,8 @@ async function sendEmailsToUsers(users) {
   }
   console.log("Mail sent")
 }
-
+// */10 * * * * * => 10 Sec
+// 0 8 * * * => 1 day
 cron.schedule('0 8 * * *', async () => {
   const users = await getUsersWithZeroQuantityProducts();
   await sendEmailsToUsers(users);
