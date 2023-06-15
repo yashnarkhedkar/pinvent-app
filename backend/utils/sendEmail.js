@@ -12,6 +12,7 @@ const sendEmail = async (subject, message, send_to, sent_from, reply_to) => {
     tls: {
       rejectUnauthorized: true,
     },
+    from: process.env.EMAIL_HOST,
   });
 
   // Option for sending email
@@ -21,6 +22,7 @@ const sendEmail = async (subject, message, send_to, sent_from, reply_to) => {
     replyTo: reply_to,
     subject: subject,
     html: message,
+    text: "Hello. Welcome to inventron",
   };
 
   // send email

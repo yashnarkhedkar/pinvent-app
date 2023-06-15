@@ -7,7 +7,8 @@ const {
   getProduct,
   deleteProduct,
   updateProduct,
-  updateQuantity
+  updateQuantity,
+  getUsersWithZeroQuantityProducts
 } = require("../controllers/productController");
 const { upload } = require("../utils/fileUpload");
 
@@ -17,5 +18,6 @@ router.patch("/:id", protect, upload.single("image"), updateProduct);
 router.get("/", protect, getProducts);
 router.get("/:id", protect, getProduct);
 router.delete("/:id", protect, deleteProduct);
+router.get("/scheduler/outofstock", getUsersWithZeroQuantityProducts);
 
 module.exports = router;

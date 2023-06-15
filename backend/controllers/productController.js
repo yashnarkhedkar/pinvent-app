@@ -1,7 +1,10 @@
 const asyncHandler = require("express-async-handler");
 const Product = require("../models/productModel");
+const User = require("../models/userModel")
 const { fileSizeFormatter } = require("../utils/fileUpload");
 const cloudinary = require("cloudinary").v2;
+const cron = require('node-cron');
+const sendEmail = require("../utils/sendEmail");
 
 // Create Prouct
 const createProduct = asyncHandler(async (req, res) => {
@@ -189,10 +192,14 @@ const updateQuantity = asyncHandler(async (req, res) => {
 
     const updatedQuantity = receivedWeight / recordWeight;
 
-    console.log("quantity", product.available, " ", updatedQuantity);
+    console.log("quantity", product.available, " To be updated ", updatedQuantity);
     
     if(product.available === "0"){
       res.status(200).send("Product Quantity becomes zero!!");
+      return ;
+    } else if(product.available - updatedQuantity < 0){
+      console.log(abs(product.available - updatedQuantity), " products are missing");
+      res.status(200).send(abs(product.available - updatedQuantity), " products are missing");
       return ;
     }
     product.available -= updatedQuantity;
@@ -206,11 +213,84 @@ const updateQuantity = asyncHandler(async (req, res) => {
 });
 
 
+const getUsersWithZeroQuantityProducts = asyncHandler(async (req, res) => {
+  const products = await Product.find({ available: 0 }).select('user name quantity available price image.filePath');
+  const userIds = Array.from(new Set(products.map(product => product.user)));
+
+  const users = await User.find({ _id: { $in: userIds } });
+
+  const usersWithProducts = users.map(user => {
+    const userProducts = products.filter(product => product.user.toString() === user._id.toString());
+    return {
+      userId: user._id,
+      name: user.name,
+      email : user.email,
+      products: userProducts.map(product => ({
+        name: product.name,
+        quantity: product.quantity,
+        available: product.available,
+        price: product.price,
+        imageFilePath: product.image.filePath
+      }))
+    };
+  });
+  return usersWithProducts;
+});
+
+async function sendEmailsToUsers(users) {
+  for (const user of users) {
+    const { userId, name, products } = user;
+
+    let emailContent = `<h2>Products with Zero Availability</h2>
+                        <p>Dear ${name},</p>
+                        <p>This is to notify you that the following products in your inventory have reached zero availability:</p>
+                        <table style="border-collapse: collapse;">
+                          <thead>
+                            <tr>
+                              <th style="border: 1px solid black; padding: 10px;">Product</th>
+                              <th style="border: 1px solid black; padding: 10px;">Price</th>
+                            </tr>
+                          </thead>
+                          <tbody>`;
+
+    for (const product of products) {
+      const { name, price, imageFilePath } = product;
+      emailContent += `<tr>
+                        <td style="border: 1px solid black; padding: 10px;">
+                          <img src="${imageFilePath}" alt="${name}" style="display: block; max-width: 50px; height: auto;">
+                          <p style="margin: 0;">${name}</p>
+                        </td>
+                        <td style="border: 1px solid black; padding: 10px;">${price}</td>
+                      </tr>`;
+    }
+
+    emailContent += `</tbody>
+                    </table>
+                    <p>Please take necessary actions to restock these products.</p>
+                    <p>Best regards,<br/>The Inventeron Team</p>`;
+
+    // Send email to the user
+    await sendEmail(
+      'Inventory Alert: Products with Zero Availability',
+      emailContent,
+      user.email,
+      process.env.EMAIL_USER
+    );
+  }
+  console.log("Mail sent")
+}
+
+cron.schedule('0 8 * * *', async () => {
+  const users = await getUsersWithZeroQuantityProducts();
+  await sendEmailsToUsers(users);
+});
+
 module.exports = {
   createProduct,
   getProducts,
   getProduct,
   deleteProduct,
   updateProduct,
-  updateQuantity
+  updateQuantity,
+  getUsersWithZeroQuantityProducts
 };
